@@ -6,6 +6,7 @@
 /* 10 Points */
 void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
+    printf("%c",ALUControl);
 
 }
 
@@ -13,6 +14,19 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 /* 10 Points */
 int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 {
+    //Halt condition checks
+    //Check if address is a multiple of 4
+
+
+    if(PC%4!=0 || &Mem[PC]==NULL){
+        return 1;
+    }
+    else{
+        PC>>2;
+        instruction= &Mem[PC];
+        return 0;
+    }
+
 
 }
 
@@ -21,6 +35,12 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 /* 10 Points */
 void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec)
 {
+    //do mod 16 in order to get the first hex value from the front which is op code
+    *op=instruction%2;
+    //Since op code is 0 it is an r type instruction
+    if(op==0){
+
+    }
 
 }
 
@@ -76,4 +96,6 @@ void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char 
 {
 
 }
+int main(void){
 
+}
