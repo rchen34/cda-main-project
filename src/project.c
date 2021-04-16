@@ -84,7 +84,57 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
 /* 15 Points */
 int instruction_decode(unsigned op,struct_controls *controls)
 {
-
+    if(op == 0) { // R-type instruction
+      controls->RegDst = '1';
+    	controls->Jump = '0';
+    	controls->Branch = '0';
+    	controls->MemRead = '0';
+    	controls->MemtoReg = '0';
+    	controls->ALUOp = '7';
+    	controls->MemWrite = '0';
+    	controls->ALUSrc = '0';
+    	controls->RegWrite = '1';
+    }else if(op == 2) {// jump
+      controls->RegDst = '2';
+    	controls->Jump = '1';
+    	controls->Branch = '0';
+    	controls->MemRead = '0';
+    	controls->MemtoReg = '2';
+    	controls->ALUOp = '0';
+    	controls->MemWrite = '0';
+    	controls->ALUSrc = '2';
+    	controls->RegWrite = '0';
+    }else if(op == 4) { // branch on equal
+      controls->RegDst = '0';
+      controls->Jump = '0';
+      controls->Branch = '1';
+      controls->MemRead = '0';
+      controls->MemtoReg = '0';
+      controls->ALUOp = '1';
+      controls->MemWrite = '0';
+      controls->ALUSrc = '2';
+      controls->RegWrite = '0';
+    }else if(op == 8) {//add immediate
+      controls->RegDst = '0';
+    	controls->Jump = '0';
+    	controls->Branch = '0';
+    	controls->MemRead = '0';
+    	controls->MemtoReg = '0';
+    	controls->ALUOp = '0';
+    	controls->MemWrite = '0';
+    	controls->ALUSrc = '2';
+    	controls->RegWrite = '1';
+    }else if(op == 10) {//set less than immediate
+      controls->RegDst = '0';
+    	controls->Jump = '0';
+    	controls->Branch = '0';
+    	controls->MemRead = '0';
+    	controls->MemtoReg = '0';
+    	controls->ALUOp = '2';
+    	controls->MemWrite = '0';
+    	controls->ALUSrc = '2';
+    	controls->RegWrite = '1';
+    }
 }
 
 /* Read Register */
@@ -99,7 +149,8 @@ void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigne
 /* 10 Points */
 void sign_extend(unsigned offset,unsigned *extended_value)
 {
-
+    // assign the sign-extended value of 'offset' to 'extended_value'
+    
 }
 
 /* ALU operations */
