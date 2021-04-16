@@ -26,7 +26,7 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
         instruction= &Mem[PC];
         return 0;
     }
-
+    // this is a test
 
 }
 
@@ -35,14 +35,17 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 /* 10 Points */
 void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec)
 {
-    //Moving the instuction over 32-(bits wanted) is the same as isolating the bits that are necessary
-    unsigned mask_six=63;
-    unsigned mask_five=31;
-    unsigned mask_j=
+
+    unsigned mask_six=63; // 63 == 11 1111
+    unsigned mask_five=31; // 31 == 1 1111
+    unsigned mask_sixteen = 65535; // == 1111 1111 1111 1111
+    unsigned mask_j= 67108863; // this big number is the decimal value of  28 1's
+                               // in binary notation, 11111111111111111111111111,
+                               // since the JUMP address is 28 bits long
 
     *op=instruction>>26;
-    if(*op==0){
-        // the mask is 11111 so when we do and it will only extract the last 5 bits
+    if(*op==0){ // if R-format
+        // the mask is 11111 so when we do AND operation it will only extract the last 5 bits
         // so we move everything over leaving the last 11 bits and extract the last 5 using the mask and &
         *funct=instruction & mask_six;
         //shift mask 5 6 times to get shamt
@@ -58,21 +61,21 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
         mask_five= mask_five<<5;
         *r1=instruction& mask_five;
     }
-    else if(*op==2||*op==3) {
-
+    else if(*op==2||*op==3) { // if J-format
+        *jsec = instruction & mask_j;
     }
-    else{
-
+    else{ // if I-format
+        // immediate value needs to be taken in. 16 bit number
+        *offset = instruction & mask_sixteen;
+        // rt needs to be taken in. mask shifted 16 bits left past immediate
+        mask_five = mask_five<<16;
+        *r2 = instruction & mask_five;
+        // rs needs to be taken in. mask shifted 5 more bits to left
+        mask_five = mask_five<<5;
+        *r1 = instruction & mask_five;
     }
 
-    // 1111 1100 1110 1001
-    // 0000 0000 0000 1111
-
-    //Since op code is 0 it is an r type instruction
-    if(op==0){
-
-    }
-
+    return;
 }
 
 
