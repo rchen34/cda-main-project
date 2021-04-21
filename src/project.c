@@ -27,10 +27,7 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
         return 0;
     }
     // this is a test
-
 }
-
-
 /* instruction partition */
 /* 10 Points */
 void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec)
@@ -141,6 +138,9 @@ int instruction_decode(unsigned op,struct_controls *controls)
 /* 5 Points */
 void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigned *data2)
 {
+    // point data1 and data2 to the value of Reg at r1 and r2
+    *data1=Reg[r1];
+    *data2=Reg[r2];
 
 }
 
