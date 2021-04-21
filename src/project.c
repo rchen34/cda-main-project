@@ -150,6 +150,24 @@ void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigne
 void sign_extend(unsigned offset,unsigned *extended_value)
 {
     // assign the sign-extended value of 'offset' to 'extended_value'
+    //according to lecture, we get passed 16 bits and we make it into 32
+    //To check if the offset is negative we shift it 15 bits to the right leaving the largest bit, if its 1 its negative
+    //otherwise its positive
+    unsigned neg_num=4294901760;
+    //this number is 11111111111111110000000000000000
+    if(offset>>15==1){
+        // for negative we use a neg_num which has all ones in the leftmost 16 positions and zeros for the remaining ones
+        // doing an or operation on this allows us to keep the integrity of the leftmost 16 bits while making the rest of
+        // them 1s
+        *extended_value= neg_num|offset;
+    }
+    else{
+        // Here you would add 16 0s to the right of offset but in C it doesn't make a difference so we just set extend value
+        // equal to offset
+        *extended_value= neg_num|offset;
+
+    }
+
     
 }
 
