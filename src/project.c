@@ -81,7 +81,7 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
 /* 15 Points */
 int instruction_decode(unsigned op,struct_controls *controls)
 {
-
+  // check for halt !!!
 
   switch(op) {
     case 0: // R-type instruction
@@ -152,7 +152,6 @@ int instruction_decode(unsigned op,struct_controls *controls)
 
       break;
 
-    case
 
     // I believe we have more cases than this
 
