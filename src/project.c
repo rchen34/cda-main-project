@@ -6,7 +6,7 @@
 /* 10 Points */
 void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
-    printf("%c",ALUControl);
+
 
 }
 
@@ -81,27 +81,34 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
 /* 15 Points */
 int instruction_decode(unsigned op,struct_controls *controls)
 {
-    if(op == 0) { // R-type instruction
+
+
+  switch(op) {
+    case 0: // R-type instruction
       controls->RegDst = '1';
-    	controls->Jump = '0';
-    	controls->Branch = '0';
-    	controls->MemRead = '0';
-    	controls->MemtoReg = '0';
-    	controls->ALUOp = '7';
-    	controls->MemWrite = '0';
-    	controls->ALUSrc = '0';
-    	controls->RegWrite = '1';
-    }else if(op == 2) {// jump
+      controls->Jump = '0';
+      controls->Branch = '0';
+      controls->MemRead = '0';
+      controls->MemtoReg = '0';
+      controls->ALUOp = '7';
+      controls->MemWrite = '0';
+      controls->ALUSrc = '0';
+      controls->RegWrite = '1';
+      break;
+
+    case 2: // jump
       controls->RegDst = '2';
-    	controls->Jump = '1';
-    	controls->Branch = '0';
-    	controls->MemRead = '0';
-    	controls->MemtoReg = '2';
-    	controls->ALUOp = '0';
-    	controls->MemWrite = '0';
-    	controls->ALUSrc = '2';
-    	controls->RegWrite = '0';
-    }else if(op == 4) { // branch on equal
+      controls->Jump = '1';
+      controls->Branch = '0';
+      controls->MemRead = '0';
+      controls->MemtoReg = '2';
+      controls->ALUOp = '0';
+      controls->MemWrite = '0';
+      controls->ALUSrc = '2';
+      controls->RegWrite = '0';
+      break;
+
+    case 4: // branch on equal
       controls->RegDst = '0';
       controls->Jump = '0';
       controls->Branch = '1';
@@ -111,27 +118,52 @@ int instruction_decode(unsigned op,struct_controls *controls)
       controls->MemWrite = '0';
       controls->ALUSrc = '2';
       controls->RegWrite = '0';
-    }else if(op == 8) {//add immediate
+      break;
+
+    case 8: //add immediate
       controls->RegDst = '0';
-    	controls->Jump = '0';
-    	controls->Branch = '0';
-    	controls->MemRead = '0';
-    	controls->MemtoReg = '0';
-    	controls->ALUOp = '0';
-    	controls->MemWrite = '0';
-    	controls->ALUSrc = '2';
-    	controls->RegWrite = '1';
-    }else if(op == 10) {//set less than immediate
+      controls->Jump = '0';
+      controls->Branch = '0';
+      controls->MemRead = '0';
+      controls->MemtoReg = '0';
+      controls->ALUOp = '0';
+      controls->MemWrite = '0';
+      controls->ALUSrc = '1';
+      controls->RegWrite = '1';
+      break;
+
+    case 10: //set less than immediate
       controls->RegDst = '0';
-    	controls->Jump = '0';
-    	controls->Branch = '0';
-    	controls->MemRead = '0';
-    	controls->MemtoReg = '0';
-    	controls->ALUOp = '2';
-    	controls->MemWrite = '0';
-    	controls->ALUSrc = '2';
-    	controls->RegWrite = '1';
-    }
+      controls->Jump = '0';
+      controls->Branch = '0';
+      controls->MemRead = '0';
+      controls->MemtoReg = '0';
+      controls->ALUOp = '2';
+      controls->MemWrite = '0';
+      controls->ALUSrc = '2';
+      controls->RegWrite = '1';
+      break;
+
+    case 11: // set less than immediate unsigned
+
+      break;
+
+    case 15: // load upper immediate
+
+      break;
+
+    case
+
+    // I believe we have more cases than this
+
+    default:
+      printf("Invalid op for switch - instruction_decode");
+      break;
+  }//end switch
+
+  return 0; // made it to end with no halts
+
+
 }
 
 /* Read Register */
@@ -183,9 +215,9 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
 int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsigned *memdata,unsigned *Mem)
 {
     // check for Halt
-    if( (ALUResult % 4) != 0) {
-      Halt = 1;
-      return Halt;
+    // 0xFFFF == 65535
+    if( (ALUResult % 4) != 0 || (ALUResult >> 2) > 65535) {
+      return 1;
     }
 
     if(MemWrite == '1') { // memory write operation
