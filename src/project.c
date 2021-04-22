@@ -168,7 +168,7 @@ void sign_extend(unsigned offset,unsigned *extended_value)
 
     }
 
-    
+
 }
 
 /* ALU operations */
@@ -182,7 +182,21 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
 /* 10 Points */
 int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsigned *memdata,unsigned *Mem)
 {
+    // check for Halt
+    if( (ALUResult % 4) != 0) {
+      Halt = 1;
+      return Halt;
+    }
 
+    if(MemWrite == '1') { // memory write operation
+      // write data2 to memory location addressed by ALUResult
+      Mem[ALUResult >> 2} = data2;
+    } else if(MemRead == '1') { // memory read operation
+      // Read content of ALUResult's memory location to memdata
+      *memdata = Mem[ALUResult >> 2];
+    }//end if else
+
+    return 0;
 }
 
 
@@ -197,8 +211,5 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 /* 10 Points */
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
-
-}
-int main(void){
 
 }
