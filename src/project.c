@@ -8,14 +8,14 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
     // read ALUControl and apply operations to A and
     unsigned result;
-    if(ALUControl==0){
+    if(ALUControl=='0'){
       result=A+B;
 
     }
-    else if(ALUControl==1){
+    else if(ALUControl=='1'){
       result=A-B;
     }
-    else if(ALUControl==2){
+    else if(ALUControl=='2'){
       if(A<B){
         result=1;
       }
@@ -23,7 +23,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
         result=0;
       }
     }
-    else if(ALUControl==3){
+    else if(ALUControl=='3'){
         if(A<B){
         result=1;
       }
@@ -31,16 +31,16 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
         result=0;
       }
     }
-    else if(ALUControl==4){
+    else if(ALUControl=='4'){
       result=A&B;
     }
-    else if(ALUControl==5){
+    else if(ALUControl=='5'){
       result=A|B;
     }
-    else if(ALUControl==6){
+    else if(ALUControl=='6'){
       B=B<<16;
     }
-    else if(ALUControl==7){
+    else if(ALUControl=='7'){
       result=!A;
     }
     //temp statement just in case its needed for debugging
@@ -48,11 +48,11 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
         printf("YOUR ALUCONTROL IS OUT OF BOUNDS BUDDY!");
     }
     // check if the result is zero and make sure it isnt instruction 6 which doesn't use a result
-    if(ALUControl!=6 && result==0){
-      *Zero=1;
+    if(ALUControl!='6' && result==0){
+      *Zero='1';
     }
     else{
-      *Zero=0;
+      *Zero='0';
     }
 
 
@@ -244,10 +244,7 @@ void sign_extend(unsigned offset,unsigned *extended_value)
         // Here you would add 16 0s to the right of offset but in C it doesn't make a difference so we just set extend value
         // equal to offset
         *extended_value= neg_num|offset;
-
     }
-
-
 }
 
 /* ALU operations */
@@ -256,6 +253,7 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
 {
    // First thing is to check the ALUSrc since it determines whether we use data2 or the extended value (this can be seen in the diagram)
    unsigned* value;
+
    if(ALUSrc == 1){
        value=&extended_value;
    }
@@ -266,10 +264,31 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
    if(ALUOp==7){
        // since it is an R type we determine the operation using funct
        if(funct==32){
-           //add
-           ALUresult=data1+value;
+          //add
+          ALUOp='0';
+       }
+       else if(funct==34){
+         ALUOp='1';
+       }
+       else if(funct==36){
+         ALUOp='4';
+       }
+       else if(funct==37){
+         ALUOp='5';
+       }
+       else if(funct==42){
+         ALUOp='2';
+       }
+       else if(funct==43){
+         ALUOp='3';
+       }
+       else{
+         return 1;
        }
    }
+   ALU(data1,*value,ALUOp,ALUresult,Zero);
+   return 0;
+
 
 }
 
@@ -320,7 +339,4 @@ void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char 
   {
     *PC += extended_value<<2;
   }
-
-
-
 }
