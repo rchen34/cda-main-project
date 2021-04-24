@@ -8,14 +8,13 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
     // read ALUControl and apply operations to A and
     unsigned result;
-    if(ALUControl=='0'){
+    if(ALUControl==0){
       result=A+B;
-
     }
-    else if(ALUControl=='1'){
+    else if(ALUControl==1){
       result=A-B;
     }
-    else if(ALUControl=='2'){
+    else if(ALUControl==2){
       if(A<B){
         result=1;
       }
@@ -23,7 +22,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
         result=0;
       }
     }
-    else if(ALUControl=='3'){
+    else if(ALUControl==3){
         if(A<B){
         result=1;
       }
@@ -31,16 +30,16 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
         result=0;
       }
     }
-    else if(ALUControl=='4'){
+    else if(ALUControl==4){
       result=A&B;
     }
-    else if(ALUControl=='5'){
+    else if(ALUControl==5){
       result=A|B;
     }
-    else if(ALUControl=='6'){
+    else if(ALUControl==6){
       B=B<<16;
     }
-    else if(ALUControl=='7'){
+    else if(ALUControl==7){
       result=!A;
     }
     //temp statement just in case its needed for debugging
@@ -48,13 +47,12 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
         printf("YOUR ALUCONTROL IS OUT OF BOUNDS BUDDY!");
     }
     // check if the result is zero and make sure it isnt instruction 6 which doesn't use a result
-    if(ALUControl!='6' && result==0){
-      *Zero='1';
+    if(ALUControl!=6 && result==0){
+      *Zero=1;
     }
     else{
-      *Zero='0';
+      *Zero=0;
     }
-
 
 }
 
@@ -244,51 +242,16 @@ void sign_extend(unsigned offset,unsigned *extended_value)
         // Here you would add 16 0s to the right of offset but in C it doesn't make a difference so we just set extend value
         // equal to offset
         *extended_value= neg_num|offset;
+
     }
+
+
 }
 
 /* ALU operations */
 /* 10 Points */
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
 {
-   // First thing is to check the ALUSrc since it determines whether we use data2 or the extended value (this can be seen in the diagram)
-   unsigned* value;
-
-   if(ALUSrc == 1){
-       value=&extended_value;
-   }
-   else{
-       value=&data2;
-   }
-   // then we read ALUop, determining what operation we do with data1 and data2/extended_value if the value is 7 (111), it is an r type
-   if(ALUOp==7){
-       // since it is an R type we determine the operation using funct
-       if(funct==32){
-          //add
-          ALUOp='0';
-       }
-       else if(funct==34){
-         ALUOp='1';
-       }
-       else if(funct==36){
-         ALUOp='4';
-       }
-       else if(funct==37){
-         ALUOp='5';
-       }
-       else if(funct==42){
-         ALUOp='2';
-       }
-       else if(funct==43){
-         ALUOp='3';
-       }
-       else{
-         return 1;
-       }
-   }
-   ALU(data1,*value,ALUOp,ALUresult,Zero);
-   return 0;
-
 
 }
 
@@ -298,16 +261,16 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 {
     // check for Halt
     // 0xFFFF == 65535
-    if( (ALUresult % 4) != 0 || (ALUresult >> 2) > 65535) {
+    if( (ALUResult % 4) != 0 || (ALUResult >> 2) > 65535) {
       return 1;
     }
 
     if(MemWrite == '1') { // memory write operation
       // write data2 to memory location addressed by ALUResult
-        Mem[ALUresult >> 2] = data2;
+      Mem[ALUResult >> 2} = data2;
     } else if(MemRead == '1') { // memory read operation
       // Read content of ALUResult's memory location to memdata
-      *memdata = Mem[ALUresult >> 2];
+      *memdata = Mem[ALUResult >> 2];
     }//end if else
 
     return 0;
@@ -318,6 +281,20 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 /* 10 Points */
 void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,char RegWrite,char RegDst,char MemtoReg,unsigned *Reg)
 {
+    unsigned dest; // register destination, picks between r2 and r3
+    if(RegDest == '1') {
+      dest = r3;
+    } else {
+      dest = r2;
+    }// end if else
+
+    if(RegWrite == '1') {
+        if(MemtoReg == '1') {
+          Reg[dest] = memdata;
+        } else {
+          Reg[dest] = ALUResult;
+        }//end if else
+    }// end outer if
 
 }
 
@@ -325,18 +302,5 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 /* 10 Points */
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
-  //adding 4 bit
-  *PC += 4;
-  
-  //jsec shift left 2 to get 28 bits we need, combining lower 28bits of jsec with high 4 bits in PC
-  if(Jump == '1')
-  {
-    *PC = (jsec<<2) | (*PC & 0xf0000000);
-  }
 
-  // adding extended value to branching zero
-  if(Zero == '1' && Branch == '1')
-  {
-    *PC += extended_value<<2;
-  }
 }
