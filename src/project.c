@@ -8,7 +8,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
     // read ALUControl and apply operations to A and
     unsigned result;
-    if(ALUControl==0){
+    if(ALUControl== '0'){
       result=A+B;
     }
     else if(ALUControl== '1'){
