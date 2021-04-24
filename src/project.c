@@ -343,7 +343,7 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 
     if(MemWrite == '1') { // memory write operation
       // write data2 to memory location addressed by ALUResult
-      Mem[ALUresult >> 2} = data2;
+      Mem[ALUresult >> 2] = data2;
     } else if(MemRead == '1') { // memory read operation
       // Read content of ALUResult's memory location to memdata
       *memdata = Mem[ALUresult >> 2];
