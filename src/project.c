@@ -306,5 +306,21 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 /* 10 Points */
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
+  //adding 4 bit
+  *PC += 4;
+  
+  //jsec shift left 2 to get 28 bits we need, combining lower 28bits of jsec with high 4 bits in PC
+  if(Jump == '1')
+  {
+    *PC = (jsec<<2) | (*PC & 0xf0000000);
+  }
+
+  // adding extended value to branching zero
+  if(Zero == '1' && Branch == '1')
+  {
+    *PC += extended_value<<2;
+  }
+
+
 
 }
