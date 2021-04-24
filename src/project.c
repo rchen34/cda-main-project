@@ -252,6 +252,44 @@ void sign_extend(unsigned offset,unsigned *extended_value)
 /* 10 Points */
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
 {
+  // First thing is to check the ALUSrc since it determines whether we use data2 or the extended value (this can be seen in the diagram)
+  unsigned* value;
+
+  if(ALUSrc == 1){
+      value=&extended_value;
+    }
+    else{
+      value=&data2;
+    }
+    // then we read ALUop, determining what operation we do with data1 and data2/extended_value if the value is 7 (111), it is an r type
+    if(ALUOp==7){
+      // since it is an R type we determine the operation using funct
+      if(funct==32){
+        //add
+        ALUOp='0';
+    }
+    else if(funct==34){
+      ALUOp='1';
+    }
+    else if(funct==36){
+      ALUOp='4';
+    }
+    else if(funct==37){
+      ALUOp='5';
+    }
+    else if(funct==42){
+      ALUOp='2';
+    }
+    else if(funct==43){
+      ALUOp='3';
+    }
+    else{
+      return 1;
+    }
+  }
+  ALU(data1,*value,ALUOp,ALUresult,Zero);
+  return 0;
+
 
 }
 
@@ -302,5 +340,18 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 /* 10 Points */
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
+  //adding 4 bit
+  *PC += 4;
 
+  //jsec shift left 2 to get 28 bits we need, combining lower 28bits of jsec with high 4 bits in PC
+  if(Jump == '1')
+  {
+    *PC = (jsec<<2) | (*PC & 0xf0000000);
+  }
+
+  // adding extended value to branching zero
+  if(Zero == '1' && Branch == '1')
+  {
+    *PC += extended_value<<2;
+  }
 }
