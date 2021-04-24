@@ -368,7 +368,7 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
         if(MemtoReg == '1') {
           Reg[dest] = memdata;
         } else {
-          Reg[dest] = ALUResult;
+          Reg[dest] = ALUresult;
         }//end if else
     }// end outer if
 
