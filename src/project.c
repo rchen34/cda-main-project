@@ -6,6 +6,54 @@
 /* 10 Points */
 void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
+    // read ALUControl and apply operations to A and
+    unsigned result;
+    if(ALUControl==0){
+      result=A+B;
+
+    }
+    else if(ALUControl==1){
+      result=A-B;
+    }
+    else if(ALUControl==2){
+      if(A<B){
+        result=1;
+      }
+      else{
+        result=0;
+      }
+    }
+    else if(ALUControl==3){
+        if(A<B){
+        result=1;
+      }
+      else{
+        result=0;
+      }
+    }
+    else if(ALUControl==4){
+      result=A&B;
+    }
+    else if(ALUControl==5){
+      result=A|B;
+    }
+    else if(ALUControl==6){
+      B=B<<16;
+    }
+    else if(ALUControl==7){
+      result=!A;
+    }
+    //temp statement just in case its needed for debugging
+    else{
+        printf("YOUR ALUCONTROL IS OUT OF BOUNDS BUDDY!");
+    }
+    // check if the result is zero and make sure it isnt instruction 6 which doesn't use a result
+    if(ALUControl!=6 && result==0){
+      *Zero=1;
+    }
+    else{
+      *Zero=0;
+    }
 
 
 }
@@ -206,6 +254,22 @@ void sign_extend(unsigned offset,unsigned *extended_value)
 /* 10 Points */
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
 {
+   // First thing is to check the ALUSrc since it determines whether we use data2 or the extended value (this can be seen in the diagram)
+   unsigned* value;
+   if(ALUSrc == 1){
+       value=&extended_value;
+   }
+   else{
+       value=&data2;
+   }
+   // then we read ALUop, determining what operation we do with data1 and data2/extended_value if the value is 7 (111), it is an r type
+   if(ALUOp==7){
+       // since it is an R type we determine the operation using funct
+       if(funct==32){
+           //add
+           ALUresult=data1+value;
+       }
+   }
 
 }
 
@@ -215,16 +279,16 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 {
     // check for Halt
     // 0xFFFF == 65535
-    if( (ALUResult % 4) != 0 || (ALUResult >> 2) > 65535) {
+    if( (ALUresult % 4) != 0 || (ALUresult >> 2) > 65535) {
       return 1;
     }
 
     if(MemWrite == '1') { // memory write operation
       // write data2 to memory location addressed by ALUResult
-      Mem[ALUResult >> 2} = data2;
+        Mem[ALUresult >> 2] = data2;
     } else if(MemRead == '1') { // memory read operation
       // Read content of ALUResult's memory location to memdata
-      *memdata = Mem[ALUResult >> 2];
+      *memdata = Mem[ALUresult >> 2];
     }//end if else
 
     return 0;
