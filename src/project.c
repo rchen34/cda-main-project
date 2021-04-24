@@ -46,6 +46,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
     else{
         printf("YOUR ALUCONTROL IS OUT OF BOUNDS BUDDY!");
     }
+
     // check if the result is zero and make sure it isnt instruction 6 which doesn't use a result
     if(ALUControl!= '6' && result==0){
       *Zero=1;
@@ -53,6 +54,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
     else{
       *Zero=0;
     }
+    *ALUresult=result;
 
 }
 
@@ -358,7 +360,7 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,char RegWrite,char RegDst,char MemtoReg,unsigned *Reg)
 {
     unsigned dest; // register destination, picks between r2 and r3
-    if(RegDest == '1') {
+    if(RegDst == '1') {
       dest = r3;
     } else {
       dest = r2;
