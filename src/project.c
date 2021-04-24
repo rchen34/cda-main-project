@@ -269,6 +269,8 @@ void sign_extend(unsigned offset,unsigned *extended_value)
     //otherwise its positive
     unsigned neg_num=4294901760;
     //this number is 11111111111111110000000000000000
+    unsigned positive_num=0x0000ffff;
+    //this number is 00000000000000001111111111111111
     if(offset>>15==1){
         // for negative we use a neg_num which has all ones in the leftmost 16 positions and zeros for the remaining ones
         // doing an or operation on this allows us to keep the integrity of the leftmost 16 bits while making the rest of
@@ -278,8 +280,7 @@ void sign_extend(unsigned offset,unsigned *extended_value)
     else{
         // Here you would add 16 0s to the right of offset but in C it doesn't make a difference so we just set extend value
         // equal to offset
-        *extended_value= neg_num|offset;
-
+        *extended_value= positive_num&offset;
     }
 
 
