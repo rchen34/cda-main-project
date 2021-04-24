@@ -337,16 +337,16 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 {
     // check for Halt
     // 0xFFFF == 65535
-    if( (ALUResult % 4) != 0 || (ALUResult >> 2) > 65535) {
+    if( (ALUresult % 4) != 0 || (ALUresult >> 2) > 65535) {
       return 1;
     }
 
     if(MemWrite == '1') { // memory write operation
       // write data2 to memory location addressed by ALUResult
-      Mem[ALUResult >> 2} = data2;
+      Mem[ALUresult >> 2} = data2;
     } else if(MemRead == '1') { // memory read operation
       // Read content of ALUResult's memory location to memdata
-      *memdata = Mem[ALUResult >> 2];
+      *memdata = Mem[ALUresult >> 2];
     }//end if else
 
     return 0;
