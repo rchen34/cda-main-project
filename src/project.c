@@ -295,7 +295,7 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
   // First thing is to check the ALUSrc since it determines whether we use data2 or the extended value (this can be seen in the diagram)
   unsigned* value;
 
-  if(ALUSrc == 1){
+  if(ALUSrc == '1'){
       value=&extended_value;
     }
     else{
