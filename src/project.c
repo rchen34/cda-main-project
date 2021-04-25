@@ -48,7 +48,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
     }
 
     // check if the result is zero and make sure it isnt instruction 6 which doesn't use a result
-    if(ALUControl!= '6' && result==0){
+    if(result==0){
       *Zero=1;
     }
     else{
@@ -66,12 +66,11 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
     //Check if address is a multiple of 4
 
 
-    if(PC%4!=0 || &Mem[PC]==NULL){
+    if(PC%4!=0){
         return 1;
     }
     else{
-        PC=PC>>2;
-        instruction= &Mem[PC];
+        *instruction= Mem[PC>>2];
         return 0;
     }
     // this is a test
@@ -87,7 +86,7 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
     unsigned mask_j= 67108863; // this big number is the decimal value of  28 1's
                                // in binary notation, 11111111111111111111111111,
                                // since the JUMP address is 28 bits long
-
+    printf("%u is the instruction \n",instruction);
     *op=instruction>>26;
     if(*op==0){ // if R-format
         // the mask is 11111 so when we do AND operation it will only extract the last 5 bits
@@ -339,7 +338,7 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 {
     // check for Halt
     // 0xFFFF == 65535
-    if( (ALUresult % 4) != 0 || (ALUresult >> 2) > 65535) {
+    if( (ALUresult % 4) != 0) {
       return 1;
     }
 
