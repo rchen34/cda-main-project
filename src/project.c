@@ -302,7 +302,7 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
       value=&data2;
     }
     // then we read ALUop, determining what operation we do with data1 and data2/extended_value if the value is 7 (111), it is an r type
-    if(ALUOp==7){
+    if(ALUOp=='7'){
       // since it is an R type we determine the operation using funct
       if(funct==32){
         //add
