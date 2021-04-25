@@ -66,12 +66,12 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
     //Check if address is a multiple of 4
 
 
-    if(PC%4!=0){
+    if(PC % 4 != 0){
         return 1;
     }
     else{
-        *instruction= Mem[PC>>2];
-        return 0;
+      *instruction= Mem[PC >> 2];
+      return 0;
     }
     // this is a test
 }
@@ -79,46 +79,24 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 /* 10 Points */
 void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec)
 {
+  //These masks are the decimal version of the equivilant amounts of 1's. so for 5 bits its 111111.
+  unsigned five_bit_mask=31;
+  unsigned six_bit_mask=63;
+  unsigned sixteen_bit_mask=65535;
+  unsigned twentysix_bit_mask=67108863;
+  //now we shift until we hit the boundary of the part of the instruction we want and then we use
+  //and(&) with the corresponding mask which removes all the bits left of the instruction
+  //The op code doesn't need one
+  //these are located within the instructions so they need shifts
+  *op = instruction >> 26;
+  *r1 = (instruction >> 21) & five_bit_mask;
+  *r2 = (instruction>>16) & five_bit_mask;
+  *r3 = (instruction>>11) & five_bit_mask;
+  //these are not so we just use the mask
+  *funct=instruction & six_bit_mask;
+  *offset=instruction & sixteen_bit_mask;
+  *jsec= instruction & twentysix_bit_mask;
 
-    unsigned mask_six=63; // 63 == 11 1111
-    unsigned mask_five=31; // 31 == 1 1111
-    unsigned mask_sixteen = 65535; // == 1111 1111 1111 1111
-    unsigned mask_j= 67108863; // this big number is the decimal value of  28 1's
-                               // in binary notation, 11111111111111111111111111,
-                               // since the JUMP address is 28 bits long
-    *op=instruction>>26;
-    if(*op==0){ // if R-format
-        // the mask is 11111 so when we do AND operation it will only extract the last 5 bits
-        // so we move everything over leaving the last 11 bits and extract the last 5 using the mask and &
-        *funct=instruction & mask_six;
-        //shift mask 5 6 times to get shamt
-        mask_five=mask_five<<6;
-        *offset=instruction & mask_five;
-        //shhift mask 5 to get rd
-        mask_five=mask_five<<5;
-        *r3=instruction & mask_five;
-        //shift mask 5 to get rt
-        mask_five=mask_five<<5;
-        *r2=instruction& mask_five;
-        // shift mask 5 to get rs
-        mask_five= mask_five<<5;
-        *r1=instruction& mask_five;
-    }
-    else if(*op==2||*op==3) { // if J-format
-        *jsec = instruction & mask_j;
-    }
-    else{ // if I-format
-        // immediate value needs to be taken in. 16 bit number
-        *offset = instruction & mask_sixteen;
-        // rt needs to be taken in. mask shifted 16 bits left past immediate
-        mask_five = mask_five<<16;
-        *r2 = instruction & mask_five;
-        // rs needs to be taken in. mask shifted 5 more bits to left
-        mask_five = mask_five<<5;
-        *r1 = instruction & mask_five;
-    }
-
-    return;
 }
 
 
