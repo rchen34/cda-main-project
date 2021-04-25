@@ -8,6 +8,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
     // read ALUControl and apply operations to A and
     unsigned result;
+    printf("A is %u B is %u \n ",A,B);
     if(ALUControl== '0'){
       result=A+B;
     }
@@ -37,7 +38,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
       result=A|B;
     }
     else if(ALUControl== '6'){
-      B=B<<16;
+      result=B<<16;
     }
     else if(ALUControl== '7'){
       result=~A;
@@ -67,7 +68,8 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 
 
     if(PC % 4 != 0){
-        return 1;
+      printf("It was instruction fetch \n");
+      return 1;
     }
     else{
       *instruction= Mem[PC >> 2];
@@ -89,9 +91,13 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
   //The op code doesn't need one
   //these are located within the instructions so they need shifts
   *op = instruction >> 26;
+  printf("op code is %u \n",*op);
   *r1 = (instruction >> 21) & five_bit_mask;
+  printf("r1 is %u",*r1);
   *r2 = (instruction>>16) & five_bit_mask;
+  printf("r2 is %u",*r2);
   *r3 = (instruction>>11) & five_bit_mask;
+  printf("r3 is %u",*r3);
   //these are not so we just use the mask
   *funct=instruction & six_bit_mask;
   *offset=instruction & sixteen_bit_mask;
@@ -245,21 +251,23 @@ void sign_extend(unsigned offset,unsigned *extended_value)
     //according to lecture, we get passed 16 bits and we make it into 32
     //To check if the offset is negative we shift it 15 bits to the right leaving the largest bit, if its 1 its negative
     //otherwise its positive
-    unsigned neg_num=4294901760;
+    unsigned neg_num=0xFFFF0000;
     //this number is 11111111111111110000000000000000
-    unsigned positive_num=0x0000ffff;
+    unsigned positive_num=0x0000FFFF;
     //this number is 00000000000000001111111111111111
-    if(offset>>15==1){
+    printf("offset before mod is %u",offset);
+    if((offset>>15)==1){
         // for negative we use a neg_num which has all ones in the leftmost 16 positions and zeros for the remaining ones
         // doing an or operation on this allows us to keep the integrity of the leftmost 16 bits while making the rest of
         // them 1s
-        *extended_value= neg_num|offset;
+        *extended_value= offset|neg_num;
     }
     else{
         // Here you would add 16 0s to the right of offset but in C it doesn't make a difference so we just set extend value
         // equal to offset
-        *extended_value= positive_num&offset;
+        *extended_value= offset&positive_num;
     }
+    printf("offset after mod is %u",*extended_value);
 
 
 }
@@ -277,6 +285,7 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
     else{
       value=&data2;
     }
+  printf("data1 is %u data2 is %u ALUsrc is %c",data1,data2,ALUSrc);
     // then we read ALUop, determining what operation we do with data1 and data2/extended_value if the value is 7 (111), it is an r type
     if(ALUOp=='7'){
       // since it is an R type we determine the operation using funct
@@ -300,6 +309,7 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
       ALUOp='3';
     }
     else{
+      printf("It was ALUop");
       return 1;
     }
   }
@@ -315,14 +325,18 @@ int rw_memory(unsigned ALUresult,unsigned data2,char MemWrite,char MemRead,unsig
 {
     // check for Halt
     // 0xFFFF == 65535
-    if( (ALUresult % 4) != 0) {
-      return 1;
-    }
 
     if(MemWrite == '1') { // memory write operation
-      // write data2 to memory location addressed by ALUResult
+      if(ALUresult%4!=0)
+      {
+      return 1;
+      }
       Mem[ALUresult >> 2] = data2;
+      // write data2 to memory location addressed by ALUResult
     } else if(MemRead == '1') { // memory read operation
+      if(ALUresult % 4 !=0){
+        return 1;
+      }
       // Read content of ALUResult's memory location to memdata
       *memdata = Mem[ALUresult >> 2];
     }//end if else
