@@ -40,7 +40,7 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
       B=B<<16;
     }
     else if(ALUControl== '7'){
-      result=!A;
+      result=~A;
     }
     //temp statement just in case its needed for debugging
     else{
@@ -49,10 +49,10 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 
     // check if the result is zero and make sure it isnt instruction 6 which doesn't use a result
     if(result==0){
-      *Zero=1;
+      *Zero='1';
     }
     else{
-      *Zero=0;
+      *Zero='0';
     }
     *ALUresult=result;
 
@@ -86,7 +86,6 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
     unsigned mask_j= 67108863; // this big number is the decimal value of  28 1's
                                // in binary notation, 11111111111111111111111111,
                                // since the JUMP address is 28 bits long
-    printf("%u is the instruction \n",instruction);
     *op=instruction>>26;
     if(*op==0){ // if R-format
         // the mask is 11111 so when we do AND operation it will only extract the last 5 bits
